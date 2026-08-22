@@ -1,0 +1,303 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GlobeTrotter — Odoo Hackathon Pitch Presentation</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .slide { display: none; }
+    .slide.active { display: flex; }
+  </style>
+</head>
+<body class="bg-slate-950 text-white min-h-screen flex flex-col justify-between select-none overflow-hidden">
+  <!-- Top Bar -->
+  <header class="p-6 flex items-center justify-between border-b border-slate-800/80 bg-slate-900/40 backdrop-blur">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-500 to-blue-600 flex items-center justify-center text-white shadow-lg shadow-sky-500/20">
+        <i class="fa-solid fa-compass text-lg"></i>
+      </div>
+      <div>
+        <h1 class="font-extrabold text-lg text-white">GlobeTrotter</h1>
+        <p class="text-xs text-sky-400 font-bold uppercase tracking-wider">Odoo Hackathon 2026 Pitch</p>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-4 text-xs">
+      <div class="px-3 py-1.5 rounded-full bg-slate-800 border border-slate-700 text-slate-300 font-mono">
+        <span id="timerDisplay">00:00</span> / 03:00
+      </div>
+      <span class="text-slate-400 font-bold" id="slideIndicator">Slide 1 / 7</span>
+    </div>
+  </header>
+
+  <!-- Slide Canvas -->
+  <main class="flex-1 flex items-center justify-center p-8 sm:p-12 max-w-6xl mx-auto w-full">
+    <!-- Slide 1: Title -->
+    <div class="slide active flex-col items-center text-center space-y-6 max-w-3xl">
+      <span class="px-4 py-1.5 rounded-full bg-sky-500/10 border border-sky-400/20 text-sky-400 text-xs font-black uppercase tracking-widest">
+        Odoo Hackathon Presentation
+      </span>
+      <h2 class="text-4xl sm:text-6xl font-black tracking-tight leading-tight bg-gradient-to-r from-white via-slate-100 to-sky-400 bg-clip-text text-transparent">
+        Empowering Personalized Multi-City Travel Planning
+      </h2>
+      <p class="text-slate-400 text-base sm:text-lg leading-relaxed">
+        An intelligent, automated itinerary builder with real-time financial tracking, multi-city sequencing, and AI recommendations.
+      </p>
+      <div class="pt-4 flex flex-wrap items-center justify-center gap-3 text-xs text-slate-400 font-medium">
+        <span class="px-3 py-1.5 bg-slate-900 rounded-xl border border-slate-800">Mrudang Shah (Backend)</span>
+        <span class="px-3 py-1.5 bg-slate-900 rounded-xl border border-slate-800">Angel Acharya (Frontend)</span>
+        <span class="px-3 py-1.5 bg-slate-900 rounded-xl border border-slate-800">Labdhi Mehta (Data & AI)</span>
+        <span class="px-3 py-1.5 bg-slate-900 rounded-xl border border-slate-800">Manas Mashru (UI/UX)</span>
+      </div>
+    </div>
+
+    <!-- Slide 2: The Problem -->
+    <div class="slide flex-col space-y-6 max-w-4xl w-full">
+      <span class="text-xs font-black text-rose-400 uppercase tracking-widest">The Problem</span>
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-white">Travel Planning is Fragmented & Stressful</h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
+        <div class="bg-slate-900/80 p-6 rounded-3xl border border-slate-800 space-y-3">
+          <div class="w-10 h-10 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center text-lg">
+            <i class="fa-solid fa-layer-group"></i>
+          </div>
+          <h3 class="font-bold text-lg text-white">App Juggling</h3>
+          <p class="text-xs text-slate-400 leading-relaxed">Travelers use 6+ tabs for flights, hotels, activities, and budget spreadsheets without a single unified timeline.</p>
+        </div>
+
+        <div class="bg-slate-900/80 p-6 rounded-3xl border border-slate-800 space-y-3">
+          <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-lg">
+            <i class="fa-solid fa-calculator"></i>
+          </div>
+          <h3 class="font-bold text-lg text-white">Budget Surprises</h3>
+          <p class="text-xs text-slate-400 leading-relaxed">No real-time dynamic cost estimation per city stop, leading to frequent 30%+ budget overruns.</p>
+        </div>
+
+        <div class="bg-slate-900/80 p-6 rounded-3xl border border-slate-800 space-y-3">
+          <div class="w-10 h-10 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center text-lg">
+            <i class="fa-solid fa-share-nodes"></i>
+          </div>
+          <h3 class="font-bold text-lg text-white">Zero Forkability</h3>
+          <p class="text-xs text-slate-400 leading-relaxed">Sharing itineraries with friends means copying raw text messages instead of interactive 1-click cloneable guides.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 3: The Solution -->
+    <div class="slide flex-col space-y-6 max-w-4xl w-full">
+      <span class="text-xs font-black text-sky-400 uppercase tracking-widest">Our Solution</span>
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-white">GlobeTrotter: All-in-One Travel OS</h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
+        <div class="bg-slate-900/80 p-6 rounded-3xl border border-slate-800 space-y-3">
+          <div class="w-10 h-10 rounded-xl bg-sky-500/20 text-sky-400 flex items-center justify-center text-lg">
+            <i class="fa-solid fa-route"></i>
+          </div>
+          <h3 class="font-bold text-lg text-white">Multi-City Builder</h3>
+          <p class="text-xs text-slate-400 leading-relaxed">Visual stop-by-stop sequencing with activity assignment and automated calendar views.</p>
+        </div>
+
+        <div class="bg-slate-900/80 p-6 rounded-3xl border border-slate-800 space-y-3">
+          <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-lg">
+            <i class="fa-solid fa-chart-pie"></i>
+          </div>
+          <h3 class="font-bold text-lg text-white">Budget Forecaster</h3>
+          <p class="text-xs text-slate-400 leading-relaxed">Live multi-currency financial analytics by category and day, with over-budget alerts.</p>
+        </div>
+
+        <div class="bg-slate-900/80 p-6 rounded-3xl border border-slate-800 space-y-3">
+          <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-lg">
+            <i class="fa-solid fa-robot"></i>
+          </div>
+          <h3 class="font-bold text-lg text-white">AI Discovery</h3>
+          <p class="text-xs text-slate-400 leading-relaxed">Cosine-similarity recommendation engine recommending curated activities based on user preferences.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 4: 13-Screen Architecture -->
+    <div class="slide flex-col space-y-6 max-w-4xl w-full">
+      <span class="text-xs font-black text-purple-400 uppercase tracking-widest">Complete Coverage</span>
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-white">13 Production Screens Implemented</h2>
+
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs pt-2">
+        <div class="p-3.5 bg-slate-900 border border-slate-800 rounded-2xl">1. Auth / Signup</div>
+        <div class="p-3.5 bg-slate-900 border border-slate-800 rounded-2xl">2. Dashboard Hub</div>
+        <div class="p-3.5 bg-slate-900 border border-slate-800 rounded-2xl">3. Trip Planner Wizard</div>
+        <div class="p-3.5 bg-slate-900 border border-slate-800 rounded-2xl">4. My Trips (List)</div>
+        <div class="p-3.5 bg-slate-900 border border-slate-800 rounded-2xl">5. Itinerary Builder</div>
+        <div class="p-3.5 bg-slate-900 border border-slate-800 rounded-2xl">6. Itinerary View</div>
+        <div class="p-3.5 bg-slate-900 border border-slate-800 rounded-2xl">7. City Search</div>
+        <div class="p-3.5 bg-slate-900 border border-slate-800 rounded-2xl">8. Activity Search</div>
+        <div class="p-3.5 bg-slate-900 border border-slate-800 rounded-2xl">9. Budget Breakdown</div>
+        <div class="p-3.5 bg-slate-900 border border-slate-800 rounded-2xl">10. Trip Calendar</div>
+        <div class="p-3.5 bg-slate-900 border border-slate-800 rounded-2xl">11. Public Share Link</div>
+        <div class="p-3.5 bg-slate-900 border border-slate-800 rounded-2xl">12. User Profile</div>
+        <div class="p-3.5 bg-slate-900 border border-slate-800 rounded-2xl col-span-2">13. Admin & Analytics Hub</div>
+        <div class="p-3.5 bg-sky-950/80 border border-sky-500/40 text-sky-300 font-bold rounded-2xl col-span-2 text-center">
+          + Instant Zero-Install Demo (index.html)
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 5: Tech Stack & Architecture -->
+    <div class="slide flex-col space-y-6 max-w-4xl w-full">
+      <span class="text-xs font-black text-emerald-400 uppercase tracking-widest">Engineering Excellence</span>
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-white">Full-Stack Decoupled Architecture</h2>
+
+      <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 pt-2">
+        <div class="p-5 bg-slate-900 border border-slate-800 rounded-2xl space-y-2">
+          <span class="text-xs font-bold text-sky-400">Backend</span>
+          <h4 class="font-extrabold text-base text-white">FastAPI + PostgreSQL</h4>
+          <p class="text-[11px] text-slate-400">SQLAlchemy ORM, Pydantic v2 validation, JWT authentication.</p>
+        </div>
+
+        <div class="p-5 bg-slate-900 border border-slate-800 rounded-2xl space-y-2">
+          <span class="text-xs font-bold text-cyan-400">Frontend</span>
+          <h4 class="font-extrabold text-base text-white">Next.js 14 + Tailwind</h4>
+          <p class="text-[11px] text-slate-400">App Router, responsive layouts, Lucide icons, Chart analytics.</p>
+        </div>
+
+        <div class="p-5 bg-slate-900 border border-slate-800 rounded-2xl space-y-2">
+          <span class="text-xs font-bold text-amber-400">Data & AI</span>
+          <h4 class="font-extrabold text-base text-white">Pandas + Scikit</h4>
+          <p class="text-[11px] text-slate-400">Content-based recommendation microservice, K-Means clustering.</p>
+        </div>
+
+        <div class="p-5 bg-slate-900 border border-slate-800 rounded-2xl space-y-2">
+          <span class="text-xs font-bold text-purple-400">Design System</span>
+          <h4 class="font-extrabold text-base text-white">W3C Design Tokens</h4>
+          <p class="text-[11px] text-slate-400">Accessible UI specs, WCAG 2.1 AA contrast compliance.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 6: Business Model & Future -->
+    <div class="slide flex-col space-y-6 max-w-4xl w-full">
+      <span class="text-xs font-black text-amber-400 uppercase tracking-widest">Market & Monetization</span>
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-white">Sustainable Revenue Streams</h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
+        <div class="bg-slate-900/80 p-6 rounded-3xl border border-slate-800 space-y-3">
+          <h3 class="font-bold text-lg text-white">Activity Commissions</h3>
+          <p class="text-xs text-slate-400 leading-relaxed">8-12% affiliate commission on booked tours, museum passes, and experiences.</p>
+        </div>
+        <div class="bg-slate-900/80 p-6 rounded-3xl border border-slate-800 space-y-3">
+          <h3 class="font-bold text-lg text-white">GlobeTrotter Pro</h3>
+          <p class="text-xs text-slate-400 leading-relaxed">$5.99/mo subscription for unlimited offline downloads, flight tracking, and AI concierge.</p>
+        </div>
+        <div class="bg-slate-900/80 p-6 rounded-3xl border border-slate-800 space-y-3">
+          <h3 class="font-bold text-lg text-white">Odoo ERP Integration</h3>
+          <p class="text-xs text-slate-400 leading-relaxed">Direct synchronization with Odoo Accounting, CRM, and Expense management modules.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 7: Thank You -->
+    <div class="slide flex-col items-center text-center space-y-6 max-w-3xl">
+      <div class="w-16 h-16 rounded-3xl bg-gradient-to-tr from-sky-500 to-blue-600 flex items-center justify-center text-white text-3xl shadow-xl shadow-sky-500/30">
+        <i class="fa-solid fa-compass"></i>
+      </div>
+      <h2 class="text-4xl sm:text-5xl font-black text-white">Thank You, Judges!</h2>
+      <p class="text-slate-400 text-sm max-w-xl">
+        GlobeTrotter makes multi-city travel planning effortless, personalized, and delightful. Ready for Live Q&A!
+      </p>
+      <div class="pt-4 flex items-center gap-4">
+        <a href="../pitch/PITCH_SCRIPT.md" target="_blank" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-bold transition">
+          View Pitch Script
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <!-- Bottom Navigation -->
+  <footer class="p-6 flex items-center justify-between border-t border-slate-800/80 bg-slate-900/40 backdrop-blur">
+    <button id="prevBtn" class="px-5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition flex items-center gap-2">
+      <i class="fa-solid fa-arrow-left"></i> Previous
+    </button>
+
+    <div class="flex items-center gap-2">
+      <button id="startTimerBtn" class="px-3 py-1.5 rounded-lg bg-sky-600/20 text-sky-400 hover:bg-sky-600/30 text-xs font-semibold">
+        Start Timer
+      </button>
+    </div>
+
+    <button id="nextBtn" class="px-5 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-bold transition flex items-center gap-2 shadow-lg shadow-sky-600/20">
+      Next <i class="fa-solid fa-arrow-right"></i>
+    </button>
+  </footer>
+
+  <script>
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+    const indicator = document.getElementById('slideIndicator');
+
+    function updateSlide() {
+      slides.forEach((s, idx) => {
+        s.classList.toggle('active', idx === currentSlide);
+      });
+      indicator.textContent = `Slide ${currentSlide + 1} / ${totalSlides}`;
+    }
+
+    document.getElementById('nextBtn').addEventListener('click', () => {
+      if (currentSlide < totalSlides - 1) {
+        currentSlide++;
+        updateSlide();
+      }
+    });
+
+    document.getElementById('prevBtn').addEventListener('click', () => {
+      if (currentSlide > 0) {
+        currentSlide--;
+        updateSlide();
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') {
+        if (currentSlide < totalSlides - 1) {
+          currentSlide++;
+          updateSlide();
+        }
+      } else if (e.key === 'ArrowLeft') {
+        if (currentSlide > 0) {
+          currentSlide--;
+          updateSlide();
+        }
+      }
+    });
+
+    // Timer
+    let seconds = 0;
+    let timerId = null;
+    const timerDisplay = document.getElementById('timerDisplay');
+    const startTimerBtn = document.getElementById('startTimerBtn');
+
+    startTimerBtn.addEventListener('click', () => {
+      if (!timerId) {
+        timerId = setInterval(() => {
+          seconds++;
+          const mins = String(Math.floor(seconds / 60)).padStart(2, '0');
+          const secs = String(seconds % 60).padStart(2, '0');
+          timerDisplay.textContent = `${mins}:${secs}`;
+          if (seconds >= 180) {
+            timerDisplay.classList.add('text-red-400');
+          }
+        }, 1000);
+        startTimerBtn.textContent = 'Pause Timer';
+      } else {
+        clearInterval(timerId);
+        timerId = null;
+        startTimerBtn.textContent = 'Resume Timer';
+      }
+    });
+  </script>
+</body>
+</html>

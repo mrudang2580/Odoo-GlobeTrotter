@@ -1,0 +1,15 @@
+﻿version: '3.8'
+
+services:
+  backend:
+    build: .
+    container_name: globetrotter_backend
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=sqlite:///./globetrotter.db
+      - SECRET_KEY=hackathon-globetrotter-super-secret-key-2026
+      - ACCESS_TOKEN_EXPIRE_MINUTES=1440
+    volumes:
+      - ./globetrotter.db:/app/globetrotter.db
+    restart: unless-stopped

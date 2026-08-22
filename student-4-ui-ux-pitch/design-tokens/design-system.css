@@ -1,0 +1,13 @@
+﻿:root {
+  --color-brand-primary: #0284c7;
+  --color-brand-dark: #0369a1;
+  --color-brand-light: #f0f9ff;
+  --color-accent-amber: #f59e0b;
+  --color-success: #10b981;
+  --color-danger: #ef4444;
+  --color-surface-bg: #f8fafc;
+  --color-surface-card: #ffffff;
+  --radius-card: 16px;
+  --radius-button: 12px;
+  --font-family-base: 'Plus Jakarta Sans', system-ui, sans-serif;
+}

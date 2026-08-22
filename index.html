@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GlobeTrotter — Empowering Personalized Travel Planning</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: { 50: '#f0f9ff', 100: '#e0f2fe', 500: '#0284c7', 600: '#0369a1', 700: '#075985' },
+            accent: { 400: '#fbbf24', 500: '#f59e0b', 600: '#d97706' }
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .hide-scrollbar::-webkit-scrollbar { display: none; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 antialiased min-h-screen">
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    const INITIAL_CITIES = [
+      { id: 'c1', name: 'Paris', country: 'France', region: 'Europe', cost_index: 4, popularity_score: 98, image_url: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=800', description: 'The City of Light, famed for world-class art, fashion, gastronomy, and romantic architecture.' },
+      { id: 'c2', name: 'Tokyo', country: 'Japan', region: 'Asia', cost_index: 4, popularity_score: 96, image_url: 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?w=800', description: 'A vibrant metropolis blending futuristic high-rises with historic temples and culinary delights.' },
+      { id: 'c3', name: 'Rome', country: 'Italy', region: 'Europe', cost_index: 3, popularity_score: 94, image_url: 'https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=800', description: 'An open-air museum filled with ancient ruins, Renaissance art, and world-class espresso.' },
+      { id: 'c4', name: 'Barcelona', country: 'Spain', region: 'Europe', cost_index: 3, popularity_score: 92, image_url: 'https://images.unsplash.com/photo-1583422409516-2895a77efded?w=800', description: 'Cosmopolitan seaside city renowned for Gaudí architecture, Mediterranean beaches, and tapas.' },
+      { id: 'c5', name: 'Bali', country: 'Indonesia', region: 'Asia', cost_index: 2, popularity_score: 95, image_url: 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=800', description: 'Tropical paradise known for volcanic mountains, iconic rice paddies, and coral reefs.' },
+      { id: 'c6', name: 'New York City', country: 'USA', region: 'North America', cost_index: 5, popularity_score: 99, image_url: 'https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=800', description: 'The Big Apple with iconic skyscrapers, Broadway shows, diverse neighborhoods, and 24/7 energy.' }
+    ];
+
+    const INITIAL_TRIPS = [
+      {
+        id: 't1',
+        name: 'European Grand Heritage Odyssey',
+        description: 'A 10-day multi-city journey crossing Paris, Rome, and Barcelona.',
+        start_date: '2026-09-10',
+        end_date: '2026-09-20',
+        budget_limit: 3200,
+        cover_photo_url: 'https://images.unsplash.com/photo-1499856871958-5b9627545d1a?w=800',
+        status: 'upcoming',
+        is_public: true,
+        share_slug: 'euro-grand-2026',
+        stops: [
+          {
+            id: 's1', city_id: 'c1', city_name: 'Paris', country: 'France', start_date: '2026-09-10', end_date: '2026-09-13', budget: 1200,
+            activities: [
+              { id: 'sa1', name: 'Eiffel Tower Summit Access', category: 'sightseeing', time: '10:00 AM', cost: 35 },
+              { id: 'sa2', name: 'Louvre Masterpieces Guided Tour', category: 'culture', time: '02:30 PM', cost: 65 }
+            ]
+          },
+          {
+            id: 's2', city_id: 'c3', city_name: 'Rome', country: 'Italy', start_date: '2026-09-14', end_date: '2026-09-17', budget: 1000,
+            activities: [
+              { id: 'sa3', name: 'Colosseum & Roman Forum Tour', category: 'sightseeing', time: '09:30 AM', cost: 48 },
+              { id: 'sa4', name: 'Trastevere Sunset Food & Wine Walk', category: 'food', time: '06:00 PM', cost: 65 }
+            ]
+          }
+        ],
+        expenses: [
+          { id: 'e1', category: 'transport', amount: 550, date: '2026-09-10', description: 'Flights & Rail' },
+          { id: 'e2', category: 'stay', amount: 1100, date: '2026-09-10', description: 'Hotel Bookings' },
+          { id: 'e3', category: 'meals', amount: 480, date: '2026-09-12', description: 'Dining' }
+        ]
+      }
+    ];
+
+    function App() {
+      const [activeTab, setActiveTab] = useState('dashboard');
+      const [activeTripId, setActiveTripId] = useState('t1');
+      const [searchQuery, setSearchQuery] = useState('');
+      const [filterRegion, setFilterRegion] = useState('All');
+      const [trips, setTrips] = useState(() => {
+        const saved = localStorage.getItem('gt_trips');
+        return saved ? JSON.parse(saved) : INITIAL_TRIPS;
+      });
+      const [cities] = useState(INITIAL_CITIES);
+      const [user, setUser] = useState({
+        name: 'Alex Wanderer', email: 'alex@globetrotter.io', role: 'Traveler & Explorer',
+        city: 'San Francisco', country: 'USA', photo_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150'
+      });
+      const [showAddStopModal, setShowAddStopModal] = useState(false);
+      const [showAddActivityModal, setShowAddActivityModal] = useState(false);
+      const [selectedStopId, setSelectedStopId] = useState('');
+      const [toastMessage, setToastMessage] = useState('');
+
+      useEffect(() => {
+        localStorage.setItem('gt_trips', JSON.stringify(trips));
+      }, [trips]);
+
+      const showToast = (msg) => {
+        setToastMessage(msg);
+        setTimeout(() => setToastMessage(''), 3500);
+      };
+
+      const currentTrip = trips.find(t => t.id === activeTripId) || trips[0];
+
+      const calculateBudget = (trip) => {
+        if (!trip) return { totalCost: 0, limit: 2500, isOver: false, categories: { transport: 0, stay: 0, activities: 0, meals: 0 } };
+        let actCost = 0;
+        trip.stops.forEach(s => s.activities.forEach(a => { actCost += Number(a.cost || 0); }));
+        const cats = { transport: 0, stay: 0, activities: actCost, meals: 0 };
+        trip.expenses.forEach(e => {
+          const c = e.category.toLowerCase();
+          if (cats[c] !== undefined) cats[c] += Number(e.amount || 0);
+          else cats.activities += Number(e.amount || 0);
+        });
+        const total = Object.values(cats).reduce((a, b) => a + b, 0);
+        const limit = Number(trip.budget_limit || 2500);
+        return { totalCost: total, limit, isOver: total > limit, categories: cats };
+      };
+
+      const bInfo = calculateBudget(currentTrip);
+
+      return (
+        <div className="min-h-screen flex flex-col bg-slate-50">
+          {toastMessage && (
+            <div className="fixed bottom-6 right-6 z-50 bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-xl flex items-center gap-3 border border-slate-700 animate-bounce">
+              <i className="fa-solid fa-circle-check text-emerald-400 text-lg"></i>
+              <span className="text-sm font-medium">{toastMessage}</span>
+            </div>
+          )}
+
+          <header className="bg-white border-b border-slate-100 sticky top-0 z-40 shadow-sm">
+            <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+              <div onClick={() => setActiveTab('dashboard')} className="flex items-center gap-2.5 cursor-pointer select-none">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-600 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-sky-500/20">
+                  <i className="fa-solid fa-compass text-lg"></i>
+                </div>
+                <div>
+                  <span className="font-extrabold text-xl tracking-tight text-slate-900">Globe<span className="text-sky-600">Trotter</span></span>
+                  <span className="hidden md:inline-block ml-2 text-[10px] uppercase font-bold tracking-widest px-2 py-0.5 bg-sky-50 text-sky-700 rounded-full border border-sky-200">Hackathon Edition</span>
+                </div>
+              </div>
+
+              <nav className="hidden lg:flex items-center gap-1 text-sm font-semibold text-slate-600">
+                {[
+                  { id: 'dashboard', label: 'Dashboard', icon: 'fa-house' },
+                  { id: 'trips', label: 'My Trips', icon: 'fa-suitcase-rolling' },
+                  { id: 'builder', label: 'Itinerary Builder', icon: 'fa-route' },
+                  { id: 'itinerary_view', label: 'Timeline View', icon: 'fa-calendar-days' },
+                  { id: 'budget', label: 'Budget & Analytics', icon: 'fa-chart-pie' },
+                  { id: 'search_cities', label: 'Discover', icon: 'fa-magnifying-glass' },
+                  { id: 'admin', label: 'Admin', icon: 'fa-shield-halved' },
+                ].map(item => (
+                  <button key={item.id} onClick={() => setActiveTab(item.id)} className={`px-3.5 py-2 rounded-xl transition flex items-center gap-2 ${activeTab === item.id ? 'bg-sky-50 text-sky-700 font-bold' : 'hover:bg-slate-100 hover:text-slate-900'}`}>
+                    <i className={`fa-solid ${item.icon} text-xs opacity-70`}></i> {item.label}
+                  </button>
+                ))}
+              </nav>
+
+              <div className="flex items-center gap-3">
+                <button onClick={() => setActiveTab('create_trip')} className="px-4 py-2 bg-gradient-to-r from-sky-600 to-blue-600 hover:from-sky-700 hover:to-blue-700 text-white rounded-xl text-xs font-bold shadow-md shadow-sky-500/20 flex items-center gap-2 transition">
+                  <i className="fa-solid fa-plus"></i> <span>Plan New Trip</span>
+                </button>
+                <button onClick={() => setActiveTab('profile')} className="w-10 h-10 rounded-xl overflow-hidden border-2 border-slate-200 hover:border-sky-500 transition shadow-sm">
+                  <img src={user.photo_url} alt="Profile" className="w-full h-full object-cover" />
+                </button>
+              </div>
+            </div>
+          </header>
+
+          <main className="flex-1 max-w-7xl w-full mx-auto px-4 py-8">
+            {activeTab === 'dashboard' && (
+              <div className="space-y-8 animate-fadeIn">
+                <div className="relative rounded-3xl overflow-hidden bg-slate-900 text-white p-8 md:p-12 shadow-xl">
+                  <div className="absolute inset-0 bg-cover bg-center opacity-40 mix-blend-overlay" style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=1600)' }}></div>
+                  <div className="relative z-10 max-w-2xl space-y-4">
+                    <span className="inline-flex items-center gap-2 px-3 py-1 bg-white/10 backdrop-blur-md rounded-full text-xs font-bold tracking-wider uppercase text-amber-300 border border-white/10">
+                      <i className="fa-solid fa-wand-magic-sparkles"></i> AI Multi-City Planner
+                    </span>
+                    <h1 className="text-3xl md:text-5xl font-black tracking-tight leading-tight">Dream, Design, and Conquer Every Destination.</h1>
+                    <p className="text-slate-200 text-sm md:text-base leading-relaxed">Construct multi-city itineraries, explore curated city attractions with cost indexing, and automate budgeting with instant over-budget alerts.</p>
+                    <div className="flex flex-wrap items-center gap-3 pt-2">
+                      <button onClick={() => setActiveTab('create_trip')} className="px-6 py-3 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold rounded-xl text-sm shadow-lg shadow-amber-500/20 transition flex items-center gap-2">
+                        <i className="fa-solid fa-plane-departure"></i> Start Planning
+                      </button>
+                      <button onClick={() => setActiveTab('search_cities')} className="px-6 py-3 bg-white/10 hover:bg-white/20 text-white font-semibold rounded-xl text-sm backdrop-blur-md transition flex items-center gap-2 border border-white/20">
+                        <i className="fa-solid fa-compass"></i> Explore Destinations
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-xl bg-sky-50 text-sky-600 flex items-center justify-center text-xl font-bold"><i className="fa-solid fa-earth-americas"></i></div>
+                    <div><span className="text-xs text-slate-400 font-semibold uppercase">Active Trips</span><p className="text-2xl font-black text-slate-900">{trips.length}</p></div>
+                  </div>
+                  <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl font-bold"><i className="fa-solid fa-city"></i></div>
+                    <div><span className="text-xs text-slate-400 font-semibold uppercase">Total Stops</span><p className="text-2xl font-black text-slate-900">{trips.reduce((a, t) => a + t.stops.length, 0)}</p></div>
+                  </div>
+                  <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl font-bold"><i className="fa-solid fa-ticket"></i></div>
+                    <div><span className="text-xs text-slate-400 font-semibold uppercase">Activities</span><p className="text-2xl font-black text-slate-900">{trips.reduce((a, t) => a + t.stops.reduce((x, s) => x + s.activities.length, 0), 0)}</p></div>
+                  </div>
+                  <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-xl font-bold"><i className="fa-solid fa-wallet"></i></div>
+                    <div><span className="text-xs text-slate-400 font-semibold uppercase">Projected Cost</span><p className="text-2xl font-black text-slate-900">${bInfo.totalCost}</p></div>
+                  </div>
+                </div>
+
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-xl font-extrabold text-slate-900">Top Regional Selections</h2>
+                    <button onClick={() => setActiveTab('search_cities')} className="text-xs font-bold text-sky-600 hover:text-sky-800">View All Cities →</button>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {cities.slice(0, 4).map(city => (
+                      <div key={city.id} className="bg-white rounded-2xl overflow-hidden border border-slate-100 shadow-sm hover:shadow-md transition">
+                        <div className="h-40 bg-cover bg-center relative" style={{ backgroundImage: `url(${city.image_url})` }}>
+                          <span className="absolute top-3 right-3 bg-slate-900/80 backdrop-blur-md text-amber-400 text-xs font-bold px-2 py-0.5 rounded-lg"><i className="fa-solid fa-star text-[10px] mr-1"></i>{city.popularity_score}/100</span>
+                        </div>
+                        <div className="p-4">
+                          <h3 className="font-bold text-base text-slate-900">{city.name}</h3>
+                          <p className="text-xs text-slate-500 mb-3">{city.country} • {city.region}</p>
+                          <div className="flex items-center justify-between pt-2 border-t border-slate-100 text-xs">
+                            <span className="font-semibold text-slate-700">Cost: {'$'.repeat(city.cost_index)}</span>
+                            <button onClick={() => { setActiveTripId('t1'); setActiveTab('builder'); showToast(`Opening builder for ${city.name}`); }} className="text-xs font-bold text-sky-600 hover:text-sky-800">+ Add to Plan</button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'trips' && (
+              <div className="space-y-6 animate-fadeIn">
+                <div className="flex items-center justify-between">
+                  <div><h1 className="text-2xl font-black text-slate-900">My Trips</h1><p className="text-xs text-slate-500">Manage ongoing, upcoming, and past multi-city itineraries.</p></div>
+                  <button onClick={() => setActiveTab('create_trip')} className="px-4 py-2.5 bg-sky-600 hover:bg-sky-700 text-white rounded-xl text-xs font-bold shadow flex items-center gap-2"><i className="fa-solid fa-plus"></i> Create Trip</button>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {trips.map(trip => (
+                    <div key={trip.id} className="bg-white rounded-2xl overflow-hidden border border-slate-100 shadow-sm hover:shadow-md transition flex flex-col justify-between">
+                      <div className="h-44 bg-cover bg-center relative" style={{ backgroundImage: `url(${trip.cover_photo_url})` }}>
+                        <span className="absolute top-3 right-3 text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase bg-white/90 text-slate-900 shadow">{trip.status}</span>
+                      </div>
+                      <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
+                        <div>
+                          <h3 className="font-bold text-base text-slate-900 mb-1">{trip.name}</h3>
+                          <p className="text-xs text-slate-500 line-clamp-2 mb-3">{trip.description}</p>
+                          <div className="space-y-1.5 text-xs text-slate-600">
+                            <div className="flex items-center gap-2"><i className="fa-regular fa-calendar text-sky-600 w-4"></i>{trip.start_date} → {trip.end_date}</div>
+                            <div className="flex items-center gap-2"><i className="fa-solid fa-map-pin text-sky-600 w-4"></i>{trip.stops.length} Stops ({trip.stops.map(s => s.city_name).join(', ')})</div>
+                            <div className="flex items-center gap-2"><i className="fa-solid fa-wallet text-sky-600 w-4"></i>${trip.budget_limit} Budget Target</div>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2 pt-3 border-t border-slate-100">
+                          <button onClick={() => { setActiveTripId(trip.id); setActiveTab('builder'); }} className="flex-1 py-2 bg-sky-600 hover:bg-sky-700 text-white rounded-xl text-xs font-bold transition">Edit Stops</button>
+                          <button onClick={() => { setActiveTripId(trip.id); setActiveTab('itinerary_view'); }} className="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition">View</button>
+                          <button onClick={() => { setTrips(trips.filter(t => t.id !== trip.id)); showToast(`Deleted trip`); }} className="px-3 py-2 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-xl text-xs transition"><i className="fa-solid fa-trash"></i></button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'create_trip' && (
+              <div className="max-w-2xl mx-auto bg-white p-8 rounded-3xl border border-slate-100 shadow-sm animate-fadeIn space-y-6">
+                <div><h1 className="text-2xl font-black text-slate-900">Plan a New Multi-City Trip</h1><p className="text-xs text-slate-500">Initiate your voyage with basic parameters and target budgets.</p></div>
+                <form onSubmit={(e) => {
+                  e.preventDefault();
+                  const form = e.target;
+                  const newTrip = {
+                    id: 't_' + Date.now(),
+                    name: form.trip_name.value,
+                    description: form.trip_desc.value,
+                    start_date: form.start_date.value,
+                    end_date: form.end_date.value,
+                    budget_limit: Number(form.budget_limit.value || 2500),
+                    cover_photo_url: form.cover_photo.value || 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=800',
+                    status: 'upcoming',
+                    is_public: true,
+                    share_slug: form.trip_name.value.toLowerCase().replace(/\s+/g, '-') + '-' + Math.floor(Math.random()*1000),
+                    stops: [{ id: 's_' + Date.now(), city_id: 'c1', city_name: 'Paris', country: 'France', start_date: form.start_date.value, end_date: form.end_date.value, budget: 1000, activities: [] }],
+                    expenses: []
+                  };
+                  setTrips([newTrip, ...trips]);
+                  setActiveTripId(newTrip.id);
+                  setActiveTab('builder');
+                  showToast('Trip created! Start adding stops.');
+                }} className="space-y-4 text-xs font-semibold text-slate-700">
+                  <div><label className="block mb-1">Trip Name</label><input name="trip_name" required defaultValue="Mediterranean Summer Escape" className="w-full p-3 border rounded-xl text-sm font-normal focus:ring-2 focus:ring-sky-500 outline-none" /></div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div><label className="block mb-1">Start Date</label><input name="start_date" type="date" required defaultValue="2026-08-01" className="w-full p-3 border rounded-xl text-sm font-normal focus:ring-2 focus:ring-sky-500 outline-none" /></div>
+                    <div><label className="block mb-1">End Date</label><input name="end_date" type="date" required defaultValue="2026-08-10" className="w-full p-3 border rounded-xl text-sm font-normal focus:ring-2 focus:ring-sky-500 outline-none" /></div>
+                  </div>
+                  <div><label className="block mb-1">Estimated Target Budget ($)</label><input name="budget_limit" type="number" defaultValue="3500" className="w-full p-3 border rounded-xl text-sm font-normal focus:ring-2 focus:ring-sky-500 outline-none" /></div>
+                  <div><label className="block mb-1">Cover Photo URL</label><input name="cover_photo" defaultValue="https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?w=800" className="w-full p-3 border rounded-xl text-sm font-normal focus:ring-2 focus:ring-sky-500 outline-none" /></div>
+                  <div><label className="block mb-1">Description</label><textarea name="trip_desc" rows="3" defaultValue="Scenic multi-city tour through majestic coastal towns and historic architecture." className="w-full p-3 border rounded-xl text-sm font-normal focus:ring-2 focus:ring-sky-500 outline-none"></textarea></div>
+                  <button type="submit" className="w-full py-3.5 bg-sky-600 hover:bg-sky-700 text-white font-bold rounded-xl text-sm shadow transition">Save & Build Itinerary →</button>
+                </form>
+              </div>
+            )}
+
+            {activeTab === 'builder' && currentTrip && (
+              <div className="space-y-6 animate-fadeIn">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
+                  <div>
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-sky-600">Active Itinerary</span>
+                    <h1 className="text-2xl font-black text-slate-900">{currentTrip.name}</h1>
+                    <p className="text-xs text-slate-500">{currentTrip.start_date} → {currentTrip.end_date} • {currentTrip.stops.length} Cities in Sequence</p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <button onClick={() => setShowAddStopModal(true)} className="px-4 py-2.5 bg-sky-600 hover:bg-sky-700 text-white rounded-xl text-xs font-bold shadow flex items-center gap-2 transition">
+                      <i className="fa-solid fa-plus"></i> Add Stop / City
+                    </button>
+                    <button onClick={() => setActiveTab('itinerary_view')} className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition flex items-center gap-2">
+                      <i className="fa-solid fa-eye"></i> View Timeline
+                    </button>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  {currentTrip.stops.map((stop, idx) => (
+                    <div key={stop.id} className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm space-y-4">
+                      <div className="flex items-start justify-between">
+                        <div className="flex items-center gap-4">
+                          <span className="w-9 h-9 rounded-xl bg-sky-100 text-sky-700 font-black text-sm flex items-center justify-center">{idx + 1}</span>
+                          <div>
+                            <h3 className="font-extrabold text-lg text-slate-900">{stop.city_name}, {stop.country}</h3>
+                            <div className="flex items-center gap-4 text-xs text-slate-500 mt-0.5">
+                              <span><i className="fa-regular fa-calendar text-sky-600 mr-1"></i> {stop.start_date} to {stop.end_date}</span>
+                              <span><i className="fa-solid fa-wallet text-sky-600 mr-1"></i> ${stop.budget} Allocation</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <button onClick={() => { setSelectedStopId(stop.id); setShowAddActivityModal(true); }} className="px-3 py-1.5 bg-sky-50 hover:bg-sky-100 text-sky-700 rounded-lg text-xs font-bold transition flex items-center gap-1.5">
+                            <i className="fa-solid fa-plus"></i> Add Activity
+                          </button>
+                          <button onClick={() => {
+                            const updated = trips.map(t => t.id === currentTrip.id ? { ...t, stops: t.stops.filter(s => s.id !== stop.id) } : t);
+                            setTrips(updated);
+                            showToast(`Removed stop ${stop.city_name}`);
+                          }} className="p-2 text-slate-400 hover:text-rose-600 transition"><i className="fa-solid fa-trash-can"></i></button>
+                        </div>
+                      </div>
+
+                      <div className="bg-slate-50 rounded-xl p-4 space-y-2">
+                        <span className="text-[10px] uppercase font-extrabold tracking-wider text-slate-500">Scheduled Experiences:</span>
+                        {stop.activities.length === 0 ? (
+                          <p className="text-xs text-slate-400 italic">No activities added yet. Click "+ Add Activity" to schedule tours.</p>
+                        ) : (
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
+                            {stop.activities.map(act => (
+                              <div key={act.id} className="bg-white p-3 rounded-xl border border-slate-200/60 shadow-xs flex items-center justify-between">
+                                <div>
+                                  <h4 className="font-bold text-xs text-slate-900">{act.name}</h4>
+                                  <div className="flex items-center gap-3 text-[11px] text-slate-500 mt-0.5">
+                                    <span className="capitalize"><i className="fa-solid fa-tag text-sky-600 mr-1"></i>{act.category}</span>
+                                    <span><i className="fa-regular fa-clock text-sky-600 mr-1"></i>{act.time}</span>
+                                    <span className="font-bold text-emerald-600">${act.cost}</span>
+                                  </div>
+                                </div>
+                                <button onClick={() => {
+                                  const updated = trips.map(t => t.id === currentTrip.id ? { ...t, stops: t.stops.map(s => s.id === stop.id ? { ...s, activities: s.activities.filter(a => a.id !== act.id) } : s) } : t);
+                                  setTrips(updated);
+                                  showToast(`Removed activity`);
+                                }} className="text-slate-300 hover:text-rose-500 p-1 text-xs"><i className="fa-solid fa-xmark"></i></button>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'itinerary_view' && currentTrip && (
+              <div className="space-y-6 animate-fadeIn">
+                <div className="flex items-center justify-between bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
+                  <div><h1 className="text-2xl font-black text-slate-900">Day-by-Day Timeline View</h1><p className="text-xs text-slate-500">Chronological travel schedule for {currentTrip.name}</p></div>
+                  <button onClick={() => setActiveTab('builder')} className="px-4 py-2 bg-sky-600 text-white rounded-xl text-xs font-bold">Edit in Builder</button>
+                </div>
+                <div className="space-y-6">
+                  {currentTrip.stops.map((stop, sIdx) => (
+                    <div key={stop.id} className="relative pl-8 border-l-2 border-sky-400 space-y-4">
+                      <div className="absolute -left-2.5 top-0 w-5 h-5 rounded-full bg-sky-500 border-4 border-white shadow"></div>
+                      <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
+                        <div className="flex items-center justify-between mb-4">
+                          <div>
+                            <span className="text-xs font-extrabold text-sky-600 uppercase tracking-widest">Stop {sIdx + 1}</span>
+                            <h3 className="text-xl font-bold text-slate-900">{stop.city_name}, {stop.country}</h3>
+                            <p className="text-xs text-slate-500">{stop.start_date} to {stop.end_date}</p>
+                          </div>
+                          <span className="px-3 py-1 bg-amber-50 text-amber-700 rounded-lg text-xs font-bold border border-amber-200">Budget: ${stop.budget}</span>
+                        </div>
+                        <div className="space-y-3">
+                          {stop.activities.map((a, i) => (
+                            <div key={i} className="p-3 bg-slate-50 rounded-xl flex items-center justify-between border border-slate-100">
+                              <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 rounded-lg bg-sky-100 text-sky-600 flex items-center justify-center text-xs font-bold">{a.time.split(' ')[0]}</div>
+                                <div><h4 className="font-bold text-xs text-slate-900">{a.name}</h4><span className="text-[11px] text-slate-500 capitalize">{a.category} experience</span></div>
+                              </div>
+                              <span className="text-xs font-bold text-emerald-600">${a.cost}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'budget' && currentTrip && (
+              <div className="space-y-6 animate-fadeIn">
+                <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+                  <div>
+                    <h1 className="text-2xl font-black text-slate-900">Trip Budget & Cost Breakdown</h1>
+                    <p className="text-xs text-slate-500">Real-time expenditure tracking vs your target budget for {currentTrip.name}</p>
+                  </div>
+                  <div>
+                    <span className="text-[10px] uppercase font-bold text-slate-400">Total Projected</span>
+                    <p className={`text-2xl font-black ${bInfo.isOver ? 'text-rose-600' : 'text-sky-600'}`}>${bInfo.totalCost} <span className="text-xs font-normal text-slate-400">/ ${bInfo.limit}</span></p>
+                  </div>
+                </div>
+
+                {bInfo.isOver && (
+                  <div className="bg-rose-50 border border-rose-200 text-rose-800 p-4 rounded-2xl flex items-center gap-3 text-xs font-bold">
+                    <i className="fa-solid fa-triangle-exclamation text-lg text-rose-600"></i>
+                    <span>Over Budget Alert: Total projected expenses (${bInfo.totalCost}) exceed your target budget (${bInfo.limit}) by ${bInfo.totalCost - bInfo.limit}. Consider adjusting activity allocations.</span>
+                  </div>
+                )}
+
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {Object.entries(bInfo.categories).map(([cat, amt]) => (
+                    <div key={cat} className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 capitalize">{cat}</span>
+                      <p className="text-2xl font-black text-slate-900 mt-1">${amt}</p>
+                      <div className="w-full bg-slate-100 h-1.5 rounded-full mt-3 overflow-hidden">
+                        <div className="bg-sky-500 h-full rounded-full" style={{ width: `${Math.min(100, Math.round((amt / (bInfo.totalCost || 1)) * 100))}%` }}></div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
+                  <h3 className="font-bold text-sm text-slate-900 mb-4">Add Logged Expense</h3>
+                  <form onSubmit={(e) => {
+                    e.preventDefault();
+                    const form = e.target;
+                    const newExpense = { id: 'e_' + Date.now(), category: form.cat.value, amount: Number(form.amt.value), date: form.exp_date.value, description: form.desc.value };
+                    const updated = trips.map(t => t.id === currentTrip.id ? { ...t, expenses: [...t.expenses, newExpense] } : t);
+                    setTrips(updated);
+                    form.reset();
+                    showToast(`Added expense: ${newExpense.description} ($${newExpense.amount})`);
+                  }} className="grid grid-cols-1 md:grid-cols-5 gap-3 text-xs">
+                    <select name="cat" className="p-2.5 border rounded-xl font-medium bg-white">
+                      <option value="transport">Transport</option><option value="stay">Stay / Hotel</option><option value="meals">Meals & Food</option><option value="activities">Activities</option>
+                    </select>
+                    <input name="amt" type="number" required placeholder="Amount ($)" className="p-2.5 border rounded-xl font-medium" />
+                    <input name="exp_date" type="date" required defaultValue="2026-09-12" className="p-2.5 border rounded-xl font-medium" />
+                    <input name="desc" placeholder="Description (e.g., Eurostar)" className="p-2.5 border rounded-xl font-medium" />
+                    <button type="submit" className="py-2.5 bg-sky-600 hover:bg-sky-700 text-white font-bold rounded-xl transition">+ Add Expense</button>
+                  </form>
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'search_cities' && (
+              <div className="space-y-6 animate-fadeIn">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                  <div><h1 className="text-2xl font-black text-slate-900">Discover Destinations</h1><p className="text-xs text-slate-500">Explore travel hubs with cost indices and popularity scores.</p></div>
+                  <select value={filterRegion} onChange={e => setFilterRegion(e.target.value)} className="p-2.5 border rounded-xl text-xs font-semibold bg-white">
+                    <option value="All">All Regions</option><option value="Europe">Europe</option><option value="Asia">Asia</option><option value="North America">North America</option>
+                  </select>
+                </div>
+                <div className="relative">
+                  <i className="fa-solid fa-magnifying-glass absolute left-4 top-3.5 text-slate-400 text-sm"></i>
+                  <input type="text" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder="Search destinations by name or country..." className="w-full pl-11 pr-4 py-3 bg-white border rounded-2xl text-sm font-medium focus:ring-2 focus:ring-sky-500 outline-none" />
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                  {cities
+                    .filter(c => filterRegion === 'All' || c.region === filterRegion)
+                    .filter(c => c.name.toLowerCase().includes(searchQuery.toLowerCase()) || c.country.toLowerCase().includes(searchQuery.toLowerCase()))
+                    .map(city => (
+                      <div key={city.id} className="bg-white rounded-2xl overflow-hidden border border-slate-100 shadow-sm hover:shadow-md transition flex flex-col justify-between">
+                        <div className="h-44 bg-cover bg-center relative" style={{ backgroundImage: `url(${city.image_url})` }}>
+                          <span className="absolute top-3 right-3 bg-slate-900/80 backdrop-blur-md text-amber-400 text-xs font-bold px-2.5 py-1 rounded-lg"><i className="fa-solid fa-star text-[10px] mr-1"></i>{city.popularity_score}</span>
+                        </div>
+                        <div className="p-4 flex-1 flex flex-col justify-between">
+                          <div>
+                            <h3 className="font-bold text-base text-slate-900">{city.name}</h3>
+                            <p className="text-xs text-slate-500 mb-2">{city.country} • {city.region}</p>
+                            <p className="text-xs text-slate-600 line-clamp-2 mb-3">{city.description}</p>
+                          </div>
+                          <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+                            <span className="font-bold text-slate-700">Cost: {'$'.repeat(city.cost_index)}</span>
+                            <button onClick={() => {
+                              const newStop = { id: 's_' + Date.now(), city_id: city.id, city_name: city.name, country: city.country, start_date: '2026-09-21', end_date: '2026-09-24', budget: 900, activities: [] };
+                              const updated = trips.map(t => t.id === currentTrip.id ? { ...t, stops: [...t.stops, newStop] } : t);
+                              setTrips(updated);
+                              showToast(`Added ${city.name} to ${currentTrip.name}!`);
+                            }} className="px-3 py-1.5 bg-sky-600 hover:bg-sky-700 text-white rounded-lg font-bold transition">+ Add to Trip</button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'public_share' && currentTrip && (
+              <div className="max-w-3xl mx-auto space-y-6 animate-fadeIn">
+                <div className="bg-gradient-to-r from-sky-600 to-indigo-700 text-white p-8 rounded-3xl shadow-lg flex flex-col md:flex-row md:items-center justify-between gap-6">
+                  <div>
+                    <span className="px-3 py-1 bg-white/20 rounded-full text-xs font-bold uppercase tracking-wider mb-2 inline-block">Public Itinerary Preview</span>
+                    <h1 className="text-3xl font-black">{currentTrip.name}</h1>
+                    <p className="text-sky-100 text-xs mt-1">Shared by @{user.name} • {currentTrip.stops.length} Cities • {currentTrip.start_date} to {currentTrip.end_date}</p>
+                  </div>
+                  <button onClick={() => {
+                    const cloned = { ...currentTrip, id: 't_clone_' + Date.now(), name: `Copy of ${currentTrip.name}`, share_slug: 'copy-' + currentTrip.share_slug + '-' + Math.floor(Math.random()*1000) };
+                    setTrips([cloned, ...trips]);
+                    setActiveTripId(cloned.id);
+                    setActiveTab('builder');
+                    showToast(`Cloned trip successfully into your dashboard!`);
+                  }} className="px-6 py-3 bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold rounded-2xl text-sm shadow transition flex items-center gap-2">
+                    <i className="fa-solid fa-copy"></i> Copy to My Trips
+                  </button>
+                </div>
+                <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-slate-500 uppercase">Shareable Public Link:</span>
+                    <button onClick={() => { navigator.clipboard?.writeText(window.location.origin + '/share/' + currentTrip.share_slug); showToast('Share link copied to clipboard!'); }} className="text-xs font-bold text-sky-600 hover:text-sky-800"><i className="fa-regular fa-copy mr-1"></i> Copy Link</button>
+                  </div>
+                  <div className="p-3 bg-slate-50 rounded-xl font-mono text-xs text-slate-600 border select-all">https://globetrotter.io/share/{currentTrip.share_slug}</div>
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'profile' && (
+              <div className="max-w-2xl mx-auto bg-white p-8 rounded-3xl border border-slate-100 shadow-sm animate-fadeIn space-y-6">
+                <div className="flex items-center gap-5">
+                  <img src={user.photo_url} className="w-20 h-20 rounded-2xl object-cover border-2 border-sky-500 shadow" alt="User" />
+                  <div>
+                    <h1 className="text-2xl font-black text-slate-900">{user.name}</h1>
+                    <p className="text-xs text-slate-500">{user.email} • {user.role}</p>
+                    <span className="inline-block mt-2 text-[10px] font-bold px-2.5 py-0.5 bg-sky-50 text-sky-700 rounded-full border border-sky-200">Verified Traveler</span>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4 text-xs font-semibold text-slate-700 pt-4 border-t border-slate-100">
+                  <div><label className="block mb-1">Full Name</label><input defaultValue={user.name} className="w-full p-2.5 border rounded-xl font-normal" /></div>
+                  <div><label className="block mb-1">Email</label><input defaultValue={user.email} className="w-full p-2.5 border rounded-xl font-normal" /></div>
+                  <div><label className="block mb-1">City</label><input defaultValue={user.city} className="w-full p-2.5 border rounded-xl font-normal" /></div>
+                  <div><label className="block mb-1">Country</label><input defaultValue={user.country} className="w-full p-2.5 border rounded-xl font-normal" /></div>
+                </div>
+                <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
+                  <button onClick={() => showToast('Profile preferences updated!')} className="px-5 py-2.5 bg-sky-600 hover:bg-sky-700 text-white rounded-xl text-xs font-bold">Save Changes</button>
+                  <button onClick={() => { localStorage.clear(); setTrips(INITIAL_TRIPS); showToast('Demo data reset.'); }} className="text-xs font-bold text-rose-500 hover:text-rose-700">Reset Demo Data</button>
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'admin' && (
+              <div className="space-y-6 animate-fadeIn">
+                <div className="flex items-center justify-between">
+                  <div><h1 className="text-2xl font-black text-slate-900">Admin & Platform Analytics</h1><p className="text-xs text-slate-500">Monitor multi-city adoption, top destinations, and platform metrics.</p></div>
+                  <span className="px-3 py-1 bg-purple-50 text-purple-700 rounded-full text-xs font-bold border border-purple-200">Admin Active</span>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm"><span className="text-xs text-slate-400 font-bold uppercase">Total Users</span><p className="text-2xl font-black text-slate-900 mt-1">1,482</p></div>
+                  <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm"><span className="text-xs text-slate-400 font-bold uppercase">Total Trips</span><p className="text-2xl font-black text-sky-600 mt-1">4,210</p></div>
+                  <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm"><span className="text-xs text-slate-400 font-bold uppercase">Destinations</span><p className="text-2xl font-black text-emerald-600 mt-1">142 Cities</p></div>
+                  <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm"><span className="text-xs text-slate-400 font-bold uppercase">Avg Budget</span><p className="text-2xl font-black text-amber-600 mt-1">$3,150</p></div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
+                    <h3 className="font-bold text-sm text-slate-900 mb-4">Top 5 Trending Cities</h3>
+                    <div className="space-y-3">
+                      {cities.slice(0, 5).map((c, i) => (
+                        <div key={c.id} className="flex items-center justify-between text-xs py-1.5 border-b border-slate-100 last:border-0">
+                          <span className="font-semibold text-slate-800">{i + 1}. {c.name}, {c.country}</span>
+                          <span className="font-bold text-amber-600"><i className="fa-solid fa-fire mr-1 text-[10px]"></i>{c.popularity_score} pts</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
+                    <h3 className="font-bold text-sm text-slate-900 mb-4">Live Platform Activity</h3>
+                    <div className="space-y-3 text-xs text-slate-600">
+                      <div className="flex items-center gap-2"><i className="fa-solid fa-circle text-[6px] text-emerald-500"></i> Alex Wanderer created "European Grand Heritage Odyssey"</div>
+                      <div className="flex items-center gap-2"><i className="fa-solid fa-circle text-[6px] text-sky-500"></i> Sarah Lin added activities in Tokyo</div>
+                      <div className="flex items-center gap-2"><i className="fa-solid fa-circle text-[6px] text-purple-500"></i> Marco cloned public itinerary "European Grand Heritage Odyssey"</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </main>
+
+          {showAddStopModal && (
+            <div className="fixed inset-0 z-50 bg-slate-900/60 flex items-center justify-center p-4">
+              <div className="bg-white max-w-md w-full p-6 rounded-3xl shadow-2xl space-y-4">
+                <div className="flex items-center justify-between"><h3 className="font-extrabold text-lg text-slate-900">Add City Stop</h3><button onClick={() => setShowAddStopModal(false)} className="text-slate-400 hover:text-slate-600"><i className="fa-solid fa-xmark"></i></button></div>
+                <form onSubmit={(e) => {
+                  e.preventDefault();
+                  const form = e.target;
+                  const cityObj = cities.find(c => c.id === form.city_id.value) || cities[0];
+                  const newStop = { id: 's_' + Date.now(), city_id: cityObj.id, city_name: cityObj.name, country: cityObj.country, start_date: form.s_date.value, end_date: form.e_date.value, budget: Number(form.s_budget.value || 800), activities: [] };
+                  const updated = trips.map(t => t.id === currentTrip.id ? { ...t, stops: [...t.stops, newStop] } : t);
+                  setTrips(updated);
+                  setShowAddStopModal(false);
+                  showToast(`Added ${cityObj.name} to itinerary!`);
+                }} className="space-y-3 text-xs font-semibold text-slate-700">
+                  <div><label className="block mb-1">Select City</label><select name="city_id" className="w-full p-2.5 border rounded-xl font-normal bg-white">{cities.map(c => <option key={c.id} value={c.id}>{c.name}, {c.country}</option>)}</select></div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div><label className="block mb-1">Arrival Date</label><input name="s_date" type="date" required defaultValue="2026-09-21" className="w-full p-2.5 border rounded-xl font-normal" /></div>
+                    <div><label className="block mb-1">Departure Date</label><input name="e_date" type="date" required defaultValue="2026-09-24" className="w-full p-2.5 border rounded-xl font-normal" /></div>
+                  </div>
+                  <div><label className="block mb-1">Stop Budget Allocation ($)</label><input name="s_budget" type="number" defaultValue="800" className="w-full p-2.5 border rounded-xl font-normal" /></div>
+                  <button type="submit" className="w-full py-3 bg-sky-600 hover:bg-sky-700 text-white font-bold rounded-xl text-xs mt-2 transition">Confirm & Add Stop</button>
+                </form>
+              </div>
+            </div>
+          )}
+
+          {showAddActivityModal && (
+            <div className="fixed inset-0 z-50 bg-slate-900/60 flex items-center justify-center p-4">
+              <div className="bg-white max-w-md w-full p-6 rounded-3xl shadow-2xl space-y-4">
+                <div className="flex items-center justify-between"><h3 className="font-extrabold text-lg text-slate-900">Schedule Activity</h3><button onClick={() => setShowAddActivityModal(false)} className="text-slate-400 hover:text-slate-600"><i className="fa-solid fa-xmark"></i></button></div>
+                <form onSubmit={(e) => {
+                  e.preventDefault();
+                  const form = e.target;
+                  const newAct = { id: 'sa_' + Date.now(), name: form.act_name.value, category: form.act_cat.value, time: form.act_time.value || '10:00 AM', cost: Number(form.act_cost.value || 0) };
+                  const updated = trips.map(t => t.id === currentTrip.id ? { ...t, stops: t.stops.map(s => s.id === selectedStopId ? { ...s, activities: [...s.activities, newAct] } : s) } : t);
+                  setTrips(updated);
+                  setShowAddActivityModal(false);
+                  showToast(`Scheduled activity: ${newAct.name}`);
+                }} className="space-y-3 text-xs font-semibold text-slate-700">
+                  <div><label className="block mb-1">Activity Name</label><input name="act_name" required placeholder="e.g. Guided Catacombs Tour" className="w-full p-2.5 border rounded-xl font-normal" /></div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div><label className="block mb-1">Category</label><select name="act_cat" className="w-full p-2.5 border rounded-xl font-normal bg-white"><option value="sightseeing">Sightseeing</option><option value="culture">Culture</option><option value="food">Food</option><option value="adventure">Adventure</option></select></div>
+                    <div><label className="block mb-1">Time</label><input name="act_time" defaultValue="10:00 AM" className="w-full p-2.5 border rounded-xl font-normal" /></div>
+                  </div>
+                  <div><label className="block mb-1">Estimated Cost ($)</label><input name="act_cost" type="number" defaultValue="45" className="w-full p-2.5 border rounded-xl font-normal" /></div>
+                  <button type="submit" className="w-full py-3 bg-sky-600 hover:bg-sky-700 text-white font-bold rounded-xl text-xs mt-2 transition">Add to Schedule</button>
+                </form>
+              </div>
+            </div>
+          )}
+
+          <footer className="bg-white border-t border-slate-100 py-6 text-center text-xs text-slate-400">
+            <p>GlobeTrotter — Odoo Hackathon 2026 Solution • 4-Person Modular Repository System</p>
+          </footer>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>
