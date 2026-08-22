@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import CitySearch from "../../components/CitySearch"; // safer path
+import ActivitySearch from "@/app/components/ActivitySearch";
 
 export default function CreateTrip() {
   const [name, setName] = useState("");
@@ -22,6 +23,7 @@ export default function CreateTrip() {
 
       {/* ✅ THIS WAS MISSING */}
       <CitySearch />
+      <ActivitySearch />
     </div>
   );
 }
