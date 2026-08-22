@@ -1,5 +1,3 @@
-import "/ODOO Hackathon/CSS Files/Style.css"
-
 "use client";
 
 import { useState } from "react";
@@ -85,7 +83,7 @@ export default function CreateTrip() {
           value={name}
           onChange={(e) => setName(e.target.value)}
         />
- 
+
         <input
           className="border p-2 w-full rounded"
           placeholder="Destination"
