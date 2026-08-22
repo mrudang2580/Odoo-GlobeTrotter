@@ -1,1 +1,0 @@
-"""GlobeTrotter Backend Package"""
