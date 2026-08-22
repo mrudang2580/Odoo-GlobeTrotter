@@ -1,5 +1,7 @@
 "use client";
+
 import { useState } from "react";
+import CitySearch from "../../components/CitySearch"; // safer path
 
 export default function CreateTrip() {
   const [name, setName] = useState("");
@@ -17,6 +19,9 @@ export default function CreateTrip() {
       <button className="mt-4 bg-blue-500 text-white px-4 py-2 rounded">
         Create
       </button>
+
+      {/* ✅ THIS WAS MISSING */}
+      <CitySearch />
     </div>
   );
 }
